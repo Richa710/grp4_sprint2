@@ -1,0 +1,115 @@
+        -:    0:Source:/home/lipsabehera/Demosock/src/forkclient.c
+        -:    0:Graph:forkclient.gcno
+        -:    0:Data:forkclient.gcda
+        -:    0:Runs:1
+        -:    1:/*This the file for client program
+        -:    2:* Here we define all the include statements,libraries,structures to declare the function
+        -:    3:*we use macros for define the port number. 
+        -:    4:*/
+        -:    5:
+        -:    6:/*#include <stdio.h>
+        -:    7:#include <stdlib.h>
+        -:    8:#include <string.h>
+        -:    9:#include <sys/socket.h>
+        -:   10:#include <unistd.h>
+        -:   11:#include <arpa/inet.h>
+        -:   12:
+        -:   13:
+        -:   14:#define PORT 5555
+        -:   15:#define MAX 1024
+        -:   16:#define BACKLOG 10
+        -:   17:#define TRUE 1
+        -:   18:*/
+        -:   19:#include "/home/lipsabehera/Demosock/inc/socket.h"
+        -:   20:
+        1:   21:int main(int argc, char const* argv[])
+        -:   22:{
+        1:   23:    int sock = 0, valread, client_fd;
+        -:   24:    struct sockaddr_in serv_addr;
+        -:   25:    
+        1:   26:    char buffer[MAX_LEN] = { 0 };
+        1:   27:    loginController ();
+        -:   28:    
+        -:   29:    /*create the socket file.
+        -:   30: *for creating the socket file we are passing three arguements that is internet protocol,stream socket and the TCP protocol.
+        -:   31: *if the arguements are equal to null then it returns fail,or else the socket created successfully.
+        -:   32: */
+        1:   33:     if ((sock = socket(AF_INET, SOCK_STREAM, IPPRO_TCP)) < SOCKET_CREATE) 
+        -:   34:     {
+    #####:   35:        perror("Socket Failed..\n"); //for displaying the descriptive error message
+    #####:   36:	return -1;
+        -:   37:     }
+        -:   38:     else
+        1:   39:		printf("Socket sucessfully created..\n");
+        -:   40:
+        -:   41: 
+        -:   42:/*configure the setting of the server address.
+        -:   43: *the address of the server family is internet and setting the port number by using the function htons to proper byte order
+        -:   44: */
+        -:   45: 
+        1:   46:    serv_addr.sin_family = AF_INET;
+        1:   47:    serv_addr.sin_port = htons(PORT_NO);
+        -:   48:    
+        -:   49:    // Convert IPv4 and IPv6 addresses from text to binary form
+        -:   50:
+        1:   51:    if (inet_pton(AF_INET, IP_ADDRESS, &serv_addr.sin_addr)<= SOCKET_CONVERT)
+        -:   52:    {
+    #####:   53:        perror("\nInvalid address\n");
+    #####:   54:        return -1;
+        -:   55:    }
+        -:   56:    else
+        1:   57:		printf("Valid address\n");
+        -:   58:		
+        -:   59:    
+        -:   60:    //for connection of the socket to the server using the address structure
+        -:   61:
+        1:   62:     if ((client_fd = connect(sock, (struct sockaddr*)&serv_addr,
+        -:   63:                   sizeof(serv_addr)))< SOCKET_CONNECT) 
+        -:   64:     {
+    #####:   65:        perror("\nConnection Failed \n");
+    #####:   66:        return -1;
+        -:   67:     }
+        -:   68:     else
+        1:   69:		printf("Connected");
+        -:   70:		
+        -:   71:    while(TRUE)
+        -:   72:    {
+        2:   73:     printf("\nclient:");
+        2:   74:     fgets(buffer,MAX_LEN,stdin);
+        2:   75:     if((send(sock,buffer ,MAX_LEN, 0)<SOCKET_SEND))
+        -:   76:     {
+    #####:   77:       perror("Message not send");
+    #####:   78:       exit(TRUE);
+        -:   79:     }
+        -:   80:     else
+        -:   81:     {
+        2:   82:        if(strncmp(buffer,END_MSG,BUFF_SIZE)==SOCKET_SEND)
+        -:   83:        { 
+    #####:   84:          printf("Disconnected from server\n");
+    #####:   85:          break;
+        -:   86:        }
+        -:   87:     }
+        -:   88:     
+        -:   89:     
+        2:   90:     valread = read(sock, buffer, MAX_LEN);
+        2:   91:     if(valread<SOCKET_READ)
+        -:   92:     {
+    #####:   93:       perror("Message not received");
+    #####:   94:       exit(TRUE);
+        -:   95:     }
+        -:   96:     else
+        -:   97:     {
+        2:   98:       if(strncmp(buffer,END_MSG,BUFF_SIZE)==SOCKET_READ)
+        -:   99:       {
+        1:  100:          printf("Disconnected from server.\n");
+        1:  101:          break;
+        -:  102:       }
+        1:  103:       printf("\nAt your service:%s\n", buffer);
+        -:  104:     }
+        -:  105:    }
+        -:  106:    
+        -:  107:     // closing the connected socket
+        1:  108:     close(client_fd);
+        1:  109:     return 0;
+        -:  110:}
+        -:  111: 

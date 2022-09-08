@@ -1,0 +1,119 @@
+        -:    0:Source:/home/lipsabehera/Demosock/src/forkserver.c
+        -:    0:Graph:forkserver.gcno
+        -:    0:Data:forkserver.gcda
+        -:    0:Runs:1
+        -:    1:/*This the file for server program
+        -:    2:* Here we define all the include statements,libraries,structures to declare  the function
+        -:    3:*we use macros for define the port number. 
+        -:    4:*/
+        -:    5:
+        -:    6:/*
+        -:    7:#include <stdio.h>
+        -:    8:#include <stdlib.h>
+        -:    9:#include <string.h>
+        -:   10:#include <sys/socket.h>
+        -:   11:#include <unistd.h>
+        -:   12:#include <netinet/in.h>
+        -:   13:#include <sys/types.h>
+        -:   14:#include <arpa/inet.h>
+        -:   15:
+        -:   16:#define PORT 5555
+        -:   17:#define MAX 1024
+        -:   18:#define BACKLOG 10
+        -:   19:#define TRUE 1
+        -:   20:*/
+        -:   21:
+        -:   22:#include "/home/lipsabehera/Demosock/inc/server.h"
+        -:   23:
+        -:   24:
+    #####:   25:int main(int argc, char const* argv[])
+        -:   26:{
+        -:   27:    int server_fd, client_socket, valread;
+        -:   28:    struct sockaddr_in address;
+    #####:   29:    int sock = 0;
+        -:   30:     struct sockaddr_in serv_addr;
+        -:   31:    
+    #####:   32:    int addrlen = sizeof(address);
+    #####:   33:    char buffer[MAX_LEN] = { 0 };
+        -:   34:    pid_t childpid;                       //The process ID to hold the childprocessId
+        -:   35:    
+        -:   36:/*create the socket file.
+        -:   37: *for creating the socket file we are passing three arguements that is internet protocol,stream socket and the TCP protocol.
+        -:   38: *if the arguements are equal to null then it returns fail,or else the socket created successfully.
+        -:   39: */
+        -:   40:
+    #####:   41:    if ((server_fd = socket(AF_INET, SOCK_STREAM, IPPRO_TCP))== SOCKET_CREATE) 
+        -:   42:    {
+    #####:   43:        perror("socket failed");
+    #####:   44:        exit(EXIT_FAILURE);
+        -:   45:    }
+        -:   46:    else
+    #####:   47:        printf("Socket sucessfully created..\n");
+    #####:   48:	    address.sin_family = AF_INET;
+    #####:   49:        address.sin_addr.s_addr = INADDR_ANY;
+        -:   50:        //address.sin_addr.s_addr = inet_ntoa(IP_ADDRESS);
+    #####:   51:        address.sin_port = htons(PORT_NO);
+        -:   52:    
+        -:   53:    //Bind the socket to our specified IP and PORT.
+        -:   54:
+    #####:   55:    if (bind(server_fd, (struct sockaddr*)&address,sizeof(address))< SOCKET_BIND) 
+        -:   56:     {
+    #####:   57:        perror("bind failed");
+    #####:   58:        exit(EXIT_FAILURE);
+        -:   59:     }
+        -:   60:     else
+    #####:   61:		printf("Successfully binding...\n");
+        -:   62:		
+        -:   63:      //listen the request from the client	
+    #####:   64:     if (listen(server_fd, BACKLOG) < SOCKET_LISTEN)
+        -:   65:     {
+    #####:   66:        perror("listen");       //Printing the error message.
+    #####:   67:        exit(EXIT_FAILURE);
+        -:   68:     }
+        -:   69:     
+        -:   70:     while(TRUE)
+        -:   71:     {
+        1:   72:       if ((client_socket = accept(server_fd, (struct sockaddr*)&address,
+        -:   73:                  (socklen_t*)&addrlen)) < SOCKET_ACCEPT) 
+        -:   74:       {
+        1:   75:         printf("accept");
+        1:   76:         exit(EXIT_FAILURE);
+        -:   77:       }
+        -:   78:       else
+    #####:   79:         printf("Connnection accepted from %s : %d\n",inet_ntoa(address.sin_addr),ntohs(address.sin_port));
+        -:   80:     
+        -:   81:     //calling the function fork()
+        -:   82:
+        -:   83:
+    #####:   84:       if((childpid=fork())==CHILD_ID)        //For successfully execution of fork() process
+        -:   85:       {
+        1:   86:         close(server_fd);             //close the file descriptor
+        -:   87:         while(TRUE)
+        -:   88:       {
+        3:   89:       valread = read(client_socket, buffer, MAX_LEN);  //sock_read
+        3:   90:       printf("Client:%s\n", buffer);         //print the received message.
+        -:   91:
+        3:   92:       if(strncmp(buffer,END_MSG,BUFF_SIZE)==SOCKET_READ)
+        -:   93:       { 
+        1:   94:          printf("Disconnected from %s : %d\n",inet_ntoa(address.sin_addr),ntohs(address.sin_port));
+        1:   95:          break;
+        -:   96:       }
+        2:   97:       printf("\nAt your service:");
+        2:   98:       fgets(buffer,MAX_LEN,stdin);
+        -:   99:      
+        2:  100:       if((send(client_socket,buffer,MAX_LEN, 0)<SOCKET_SEND))
+        -:  101:       {
+    #####:  102:         perror("Message not send");
+    #####:  103:         exit(TRUE);
+        -:  104:        }
+        -:  105:       }
+        -:  106:      }
+        -:  107:     }
+        -:  108:      
+        -:  109:      // closing the connected socket
+        -:  110:     close(client_socket);
+        -:  111:     // closing the listening socket
+        -:  112:    shutdown(server_fd, SHUT_RDWR);
+        -:  113:    return 0;
+        -:  114:}
+        -:  115:		

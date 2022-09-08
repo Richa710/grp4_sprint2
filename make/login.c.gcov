@@ -1,0 +1,195 @@
+        -:    0:Source:/home/lipsabehera/Demosock/src/login.c
+        -:    0:Graph:login.gcno
+        -:    0:Data:login.gcda
+        -:    0:Runs:1
+        -:    1:/*#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <string.h>
+        -:    4:#include <stdbool.h>
+        -:    5:*/
+        -:    6:
+        -:    7:#include "/home/lipsabehera/Demosock/inc/socket.h"
+        -:    8:
+        -:    9:/*#define SIZE 30
+        -:   10:
+        -:   11:
+        -:   12:struct login
+        -:   13:{
+        -:   14:     char username[SIZE];
+        -:   15:     char password[SIZE];
+        -:   16:};
+        -:   17:*/
+        -:   18:
+        -:   19:/*
+        -:   20:*login function to take credentials as input from user,
+        -:   21:* *it reads from file named 'login.txt' where we have username and password stored.
+        -:   22:* * *it then validates the credentials entered by the user against the ones present in the file.
+        -:   23:*/
+        -:   24:
+        -:   25:
+        1:   26:void login (void)
+        -:   27:{
+        -:   28:    char username[MAX_USER_LEN],password[MAX_PSWRD];
+        -:   29:    FILE *log;
+        -:   30:
+        1:   31:    log = fopen("login.txt","r");//opened file in read mode
+        -:   32:
+        1:   33:     if (log == NULL)      //if an error occurs, it'll display error message
+        -:   34:     {
+    #####:   35:      fputs("Error at opening File!", stderr);
+    #####:   36:      exit(EXIT_FAILURE);
+        -:   37:     }
+        -:   38:    struct login l;
+        -:   39:
+        -:   40:
+        -:   41:    //accepting username and password
+        -:   42:
+        1:   43:    printf("\nPlease Enter your login credentials below\n\n");
+        1:   44:    printf("Username:  ");
+        1:   45:    fgets(username, MAX_USER_LEN, stdin);        
+        1:   46:    printf("\nPassword: ");
+        1:   47:    printf("\n");
+        1:   48:    fgets(password, MAX_PSWRD, stdin);
+        1:   49:    bool keep_reading = true;       //bool to run loop to keep reading
+        1:   50:    int current_line = 1;       //shows current line
+        1:   51:    int username_line = 1;          //line with username
+        1:   52:    int password_line = 2;          //line with password
+        -:   53:    char buffer[MAX_LEN];
+        -:   54:    //read from file and store username in l.username, password in l.password
+        -:   55:    do 
+        -:   56:    {
+        -:   57:    // read the next line from the file, store it into buffer
+        2:   58:    fgets(buffer, MAX_USER_LEN, log);
+        -:   59:
+        -:   60:    // now, we go to lines 1 & 2 and copy their values to l.username and l.password
+        2:   61:    if (current_line == username_line)
+        -:   62:    {
+        1:   63:        keep_reading = true;
+        1:   64:        strcpy(l.username, buffer);
+        -:   65:    }
+        1:   66:    else if (current_line == password_line)
+        -:   67:    {
+        1:   68:        keep_reading = false;
+        1:   69:        strcpy(l.password, buffer);
+        -:   70:    }
+        -:   71:
+        -:   72:// continue to keep track of the current line we are reading
+        2:   73:current_line++;
+        -:   74:
+        -:   75:    } 
+        2:   76:    while(keep_reading);    
+        -:   77:
+        -:   78:    
+        -:   79:    
+        1:   80:       if(strcmp(username,l.username)==0 && strcmp(password,l.password)==0)
+        -:   81:    {       
+        1:   82:            printf("\nSuccessful Login\n");
+        1:   83:        printf("\nPress any key to continue\n");
+        1:   84:        getchar();
+        1:   85:        system("clear");
+        -:   86:        }
+        -:   87:        else 
+        -:   88:        {
+    #####:   89:                printf("\nIncorrect Login Details\nPlease enter the correct credentials\n");
+    #####:   90:                exit(0);
+        -:   91:        }
+        -:   92:
+        1:   93:    fclose(log);
+        -:   94:    
+        1:   95:    return;
+        -:   96:    
+        -:   97:}
+        -:   98:
+        -:   99:/*
+        -:  100:*registration function to register or change admin credentials,
+        -:  101:* * it writes the credentials to the file named 'login.txt'.
+        -:  102:* * *it then leads to login function so the admin can login.
+        -:  103:*/
+        -:  104:
+    #####:  105:void registration(void) 
+        -:  106:{
+        -:  107:     
+        -:  108:     FILE *log;
+        -:  109:
+    #####:  110:     log=fopen("login.txt","w");    //open file in write mode
+    #####:  111:     if (log == NULL)
+        -:  112:     {
+    #####:  113:         fputs("Error opening File!", stderr);
+    #####:  114:     exit(1);
+        -:  115:     }
+        -:  116:
+        -:  117:
+        -:  118:     struct login l;
+        -:  119:
+        -:  120:     //prompt client to choose username and password
+    #####:  121:     system("clear");
+    #####:  122:     printf("Choose a username and password as credentials for system login\n"); 
+        -:  123:
+        -:  124:    //accept user name and password
+    #####:  125:    printf("\nEnter Username:\n");
+    #####:  126:    fgets(l.username, MAX_USER_LEN, stdin);
+    #####:  127:    printf("\nEnter Password:\n");
+    #####:  128:    fgets(l.password, MAX_PSWRD, stdin);
+        -:  129:
+        -:  130:    //put username and password into the file leaving 1 line in between
+    #####:  131:    fputs(l.username,log);
+        -:  132:   
+    #####:  133:    fputs(l.password,log);
+        -:  134:
+        -:  135:    //close file
+    #####:  136:    fclose(log);
+        -:  137:
+        -:  138:    //show user that account has been created
+    #####:  139:    printf("\nConfirming details...\n...\nWelcome!\n\n");
+    #####:  140:    printf("\nRegistration Successful!\n");
+    #####:  141:    printf("Press any key to continue...");
+        -:  142:
+    #####:  143:    getchar();
+    #####:  144:    system("clear");
+        -:  145:
+    #####:  146:    printf("\nNow running login utility\n");
+        -:  147:   
+    #####:  148:    login();
+    #####:  149:}
+        -:  150:    
+        -:  151:/*
+        -:  152:loginController function acts as the function to control the flow of the login sequence.
+        -:  153:we use it to prompt user with multiple menus and those menus lead into all the login related functions.
+        -:  154:*/
+        -:  155:    
+        1:  156:void *loginController (void*) 
+        -:  157:{
+        -:  158:    
+        1:  159:    system("clear");
+        -:  160:    int option;
+        1:  161:    printf("1. Register \n2. Login\n\n");
+        1:  162:    scanf("%d",&option);
+        -:  163:
+        1:  164:    getchar();
+        -:  165:    
+        1:  166:    if(option == 1)
+        -:  167:    {
+        -:  168:         pthread_t registration_thread;                            //the Id of the thread
+        -:  169:
+    #####:  170:          pthread_create(&registration_thread,NULL,(void*)&registration,NULL);  //for creating a thread.
+        -:  171:
+    #####:  172:           pthread_join(registration_thread,NULL);             //for waiting for a thread.
+        -:  173:    }
+        -:  174:    
+        1:  175:    if(option==2)
+        -:  176:    {
+        -:  177:    pthread_t login_thread;                                               //the ID of the thread
+        -:  178:
+        1:  179:    pthread_create(&login_thread,NULL,(void*)&login,NULL);     //for creating a thread
+        -:  180:
+        1:  181:    pthread_join(login_thread,NULL);                                     //for waiting for a thread.
+        -:  182:    }
+        -:  183:
+        1:  184:}
+        -:  185:
+        -:  186:    
+        -:  187:    
+        -:  188:    
+        -:  189:    
+        -:  190:    
+        -:  191:    
